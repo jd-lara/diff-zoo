@@ -194,7 +194,7 @@ x = track(t, 5)
 
 y = pow(x, 3)
 y[]
-
+#-
 y.w.instructions |> Expr
 
 # Finally, we need to alter how we derive this list. The key insight is that
@@ -225,7 +225,7 @@ function derive(w::Tape, xs...)
     elseif @capture(ex, a_^n_Number)
       d(a, Δ * n * val(a) ^ (n-1))
     elseif @capture(ex, a_ / b_)
-      d(a, Δ * val(b))
+      d(a, Δ*val(b)/val(b)^2)
       d(b, -Δ*val(a)/val(b)^2)
     else
       error("$ex is not differentiable")
@@ -250,7 +250,7 @@ end
 
 gradient((a, b) -> a*b, 2, 3)
 #-
-mysin(x) = sum((-1)^k/factorial(1.0+2k) * x^(1+2k) for k = 0:5)
+mysin(x) = sum((-1)^k/factorial(1+2k) * x^(1+2k) for k = 0:5)
 #-
 gradient(mysin, 0.5)
 #-
@@ -290,9 +290,9 @@ gradient(x -> gradient(mysin, x)[1], 0.5)
 # ### Footnotes
 
 # $^1$ Systems like TensorFlow can also just provide ways to inject control flow
-# into the graph. This brings us closer to a [source-to-source
-# approach](./reverse.ipynb) where Python is used to build an expression in
-# TensorFlows internal graph language.
+#      into the graph. This brings us closer to a [source-to-source
+#      approach](./reverse.ipynb) where Python is used to build an expression in
+#      TensorFlows internal graph language.
 
 # Fun fact: PyTorch and Flux's tapes are actually closer to the `Expr` format
 # that we originally used, in which "tracked" tensors just have pointers to

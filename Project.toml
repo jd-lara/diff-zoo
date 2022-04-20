@@ -1,7 +1,3 @@
-name = "diff-zoo"
-uuid = "0e990500-197d-40a9-9393-fcd66887cc96"
-authors = ["Mike J Innes <mike.j.innes@gmail.com>"]
-
 [deps]
 InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"

@@ -50,8 +50,8 @@ Expr(dy)
 # dy = 1
 # y1 = log(y0)
 # dy = dy/y0
-# y2 = cos(y1)
-# dy = dy*sin(y1)
+# y2 = sin(y1)
+# dy = dy*cos(y1)
 #   ...
 # ```
 
@@ -186,11 +186,11 @@ D(x -> D(sin, x), 0.5), -sin(0.5)
 # The issue comes about when we close over a variable that *is itself* being
 # differentiated.
 
-D(x -> x*D(y -> x+y, 1), 1) # == 1
+D(x -> x*D(y -> x+y, 1), 1) # == 3
 
-# The derivative $\frac{d}{dy} (x + y) = 1$, so this is equivalent to
-# $\frac{d}{dx}x$, which should also be $1$. So where did this go wrong? The
-# problem is that when we closed over $x$, we didn't just get a numeric value
+# If we simplify the inner closure, this should be equivalent to `D(x -> x*(x+1), 1)`
+# and so its derivative should be `3`. So where did this go wrong?
+# The problem is that when we closed over $x$, we didn't just get a numeric value
 # but a dual number with $\epsilon = 1$. When we then calculated $x + y$, both
 # epsilons were added as if $\frac{dx}{dy} = 1$ (effectively $x = y$). If we had
 # written this down, the answer would be correct.
@@ -224,6 +224,7 @@ D(x -> x*D(y -> x*y, 1), 4) # == 8
 # We can see how our definition of $\epsilon$ works out by applying it to
 # $f(x+\epsilon)$; let's say that $f(x) = sin(x^2)$.
 #
+# $$
 # \begin{align}
 # f(x + \epsilon) &= \sin((x + \epsilon)^2) \\
 #                 &= \sin(x^2 + 2x\epsilon + \epsilon^2) \\
@@ -231,6 +232,7 @@ D(x -> x*D(y -> x*y, 1), 4) # == 8
 #                 &= \sin(x^2)\cos(2x\epsilon) + \cos(x^2)\sin(2x\epsilon) \\
 #                 &= \sin(x^2) + 2x\cos(x^2)\epsilon \\
 # \end{align}
+# $$
 #
 # A few things have happened here. Firstly, we directly expand $(x+\epsilon)^2$
 # and remove the $\epsilon^2$ term. We expand $sin(a+b)$ and then apply a *small
@@ -239,10 +241,12 @@ D(x -> x*D(y -> x*y, 1), 4) # == 8
 # our original definition of $\epsilon$ if we look at the Taylor expansion of
 # both functions). Finally we can plug this into our derivative rule.
 #
+# $$
 # \begin{align}
 # \frac{d}{dx} f(x) &= \frac{f(x+\epsilon)-f(x)}{\epsilon} \\
 #                   &= 2x\cos(x^2)
 # \end{align}
+# $$
 #
 # This is, in my opinion, a rather nice way to derive functions by hand.
 #
